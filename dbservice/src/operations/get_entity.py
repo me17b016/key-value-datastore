@@ -1,7 +1,7 @@
 from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from clients.shard_manager_client import ShardManagerClient, MyHttpClient
-from utils import shard_util
+from processors import get_entity_processor
 router = APIRouter()
 
 class GetEntityRequestModel(BaseModel):
@@ -15,16 +15,9 @@ async def get_entity(
     table_name = requestModel.table_name
     key = requestModel.key
     try:
-        shard_id = ShardManagerClient.get_shard_id(table_name=table_name,
-                                                   key=key)
-        shards_url = shard_util.get_shards_url()
-        shard_url = shards_url[shard_id]
-        print(shard_url)
-        client = MyHttpClient(shard_url)
-        body  = {"table_name": table_name, "key": key}
-        # response = client.post(endpoint="/v1/get_entity",
-        #             data=body)
-        return body
+        response = await get_entity_processor.get_entity(table_name=table_name,
+                         key=key)
+        return JSONResponse(content=response.json(), status_code=200)
     except Exception as e:
        raise e
  

@@ -14,8 +14,9 @@ class ShardManagerClient:
         ShardManagerClient.get_instance()
         try:
             body = {"table_name": table_name, "no_of_shards": no_of_shards}
-            response = await ShardManagerClient._client.post("/v1/create_table", data=body)
-            return {"data_from_external_service": response.json()}
+            response = await ShardManagerClient._client.post("v1/create_table", data=body)
+            print(response)
+            return {"response": response.json()}
         except Exception as e:
             print(f"Error while creating table {table_name}")
             raise e
@@ -24,8 +25,9 @@ class ShardManagerClient:
         ShardManagerClient.get_instance()
         try:
             body = {"table_name": table_name, "key": key}
-            response = await ShardManagerClient._client.post("/v1/get_shard_id", data=body)
-            return {"data_from_external_service": response.json()}
+            response = await ShardManagerClient._client.post("v1/get_shard_id", data=body)
+            response = response.json()
+            return response['shard_id']
         except Exception as e:
             print("Error while getting shard id from shard manager")
             raise e

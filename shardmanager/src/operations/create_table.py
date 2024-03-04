@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from processors.create_table_processor import create_table_processor
 from typing import Optional
@@ -16,7 +17,8 @@ async def create_table(
     table_name = requestModel.table_name
     no_of_shards = requestModel.no_of_shards
     try:
-        await create_table_processor(table_name, no_of_shards)
+        res = await create_table_processor(table_name, no_of_shards)
+        return JSONResponse(content={"message": "success"}, status_code=200)
     except FileExistsError:
         raise HTTPException(status_code=409, detail=f"Table with name '{table_name}' already exists")
     except ValueError as ve:

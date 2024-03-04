@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Optional
 from clients.shard_manager_client import ShardManagerClient
@@ -16,8 +17,8 @@ async def create_table(
     table_name = requestModel.table_name
     no_of_shards = requestModel.no_of_shards
     try:
-        # ShardManagerClient.create_table(table_name=table_name,
-        #                                 no_of_shards=no_of_shards)
-        return {"k": "v"}
+        response = await ShardManagerClient.create_table(table_name=table_name,
+                                        no_of_shards=no_of_shards)
+        return JSONResponse(content=response, status_code=200)
     except Exception as e:
        raise e
